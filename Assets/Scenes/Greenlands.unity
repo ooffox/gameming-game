@@ -1696,7 +1696,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1014444685}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 3.7, y: 0.7, z: -10}
+  m_LocalPosition: {x: 0.01, y: 0.51, z: -10}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -17162,7 +17162,7 @@ MonoBehaviour:
   jumpForce: 750
   grounded: 0
   correctDir: 0
-  boostForce: 500
+  boostForce: 750
   canFly: 0
   dead: 0
   deathSound: {fileID: 8300000, guid: 5998fbc0e070a2d43b63a275d115002a, type: 3}
@@ -17264,7 +17264,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2046871623}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 3.7, y: 0.7, z: 0}
+  m_LocalPosition: {x: 0.01, y: 0.51, z: 0}
   m_LocalScale: {x: 12, y: 12, z: 12}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -17443,7 +17443,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!60 &2146577870
 PolygonCollider2D:
   m_ObjectHideFlags: 0

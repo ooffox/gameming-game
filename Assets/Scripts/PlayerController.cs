@@ -25,6 +25,9 @@ public class PlayerController : MonoBehaviour
     public bool canFly;
     private bool boosting;
     public bool dead;
+    private float lastJumped = 0.0f;
+    private float lastTryJump = 0.0f;
+    private bool jumped;
     private RaycastHit2D rayHit;
     private Vector2 boostDir;
     private Rigidbody2D Rigidbody2D;
@@ -44,7 +47,7 @@ public class PlayerController : MonoBehaviour
         fadeImage = GameObject.FindWithTag("FadeImage").GetComponent<Image>();
         fadeImage.color = new Color(0.0f, 0.0f, 0.0f, 1.0f);
         StartCoroutine(FadeOut());
-        if (spawnPosition != null)
+        if (spawnPosition != Vector2.zero)
         {
             transform.position = spawnPosition;
             inCutscene = false;
@@ -75,9 +78,15 @@ public class PlayerController : MonoBehaviour
         rayHit = Physics2D.Raycast(transform.position, Vector2.down, 2.035f);
         grounded = isGrounded();
         horizontal = Input.GetAxisRaw("Horizontal");
-        if ((canJump() || canFly) && Input.GetKeyDown(KeyCode.W))
+        if (Input.GetKeyDown(KeyCode.W)) 
         {
+            lastTryJump = Time.time;
+        }
+        if ((canJump() || canFly))
+        {
+            Rigidbody2D.velocity = Vector2.zero;
             Rigidbody2D.AddForce(Vector2.up * jumpForce * Rigidbody2D.mass);
+            lastJumped = Time.time;
         }
         if (canBoost())
         {
@@ -102,7 +111,7 @@ public class PlayerController : MonoBehaviour
         {
             return;
         }
-        Rigidbody2D.velocity = new Vector2(runSpeed * horizontal, Rigidbody2D.velocity.y);
+        Rigidbody2D.velocity = new Vector2(runSpeed * horizontal, Mathf.Clamp(Rigidbody2D.velocity.y, -20.0f, Mathf.Infinity));
     }
 
     private bool canBoost()
@@ -138,8 +147,8 @@ public class PlayerController : MonoBehaviour
 
     private bool canJump()
     {
-        
-        return grounded;
+        Debug.Log(Time.time - lastJumped);
+        return grounded && Time.time - lastTryJump < 0.2f && Time.time - lastJumped > 0.1f;
     }
 
 
