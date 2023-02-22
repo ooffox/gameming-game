@@ -11,7 +11,6 @@ public class UIBehaviour : MonoBehaviour
 
     public void Exit()
     {
-        Debug.Log("quitting");
         Application.Quit();
     }
 }
