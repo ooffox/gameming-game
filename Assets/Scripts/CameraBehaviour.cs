@@ -13,7 +13,7 @@ public class CameraBehaviour : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        player = PlayerController.playerObj;
+        player = PlayerController.s_PlayerObj;
     }
 
     // Update is called once per frame

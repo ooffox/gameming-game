@@ -29,7 +29,7 @@ public class FrogBehaviour : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (PlayerController.playerScript.dead)
+        if (PlayerController.s_PlayerScript.Dead)
         {
             Rigidbody2D.velocity = Vector2.zero;
             Rigidbody2D.isKinematic = true;
@@ -39,7 +39,7 @@ public class FrogBehaviour : MonoBehaviour
         
         grounded = isGrounded();
         jumpDir = changeDirection();
-        if (grounded && Time.time - lastJumped > 3.0f && Vector3.Distance(transform.position, PlayerController.playerObj.transform.position) < 10.0f)
+        if (grounded && Time.time - lastJumped > 3.0f && Vector3.Distance(transform.position, PlayerController.s_PlayerObj.transform.position) < 10.0f)
         {
             hop();
         }
@@ -85,12 +85,12 @@ public class FrogBehaviour : MonoBehaviour
 
     private float changeDirection()
     {
-        if (transform.position.x > PlayerController.playerObj.transform.position.x)
+        if (transform.position.x > PlayerController.s_PlayerObj.transform.position.x)
         {
             transform.localScale = new Vector3(xScale, transform.localScale.y, transform.localScale.z);
             return -1.0f;
         }
-        else if (transform.position.x < PlayerController.playerObj.transform.position.x)
+        else if (transform.position.x < PlayerController.s_PlayerObj.transform.position.x)
         {
             transform.localScale = new Vector3(-xScale, transform.localScale.y, transform.localScale.z);
             return 1.0f;

@@ -60,6 +60,7 @@ public class PauseManager : MonoBehaviour
 
     void initVariables()
     {
+        
         pauseUI = GameObject.FindWithTag("PauseUI");
         pauseText = pauseUI.transform.GetChild(0).gameObject;
         resumeUI = pauseUI.transform.GetChild(1).gameObject;

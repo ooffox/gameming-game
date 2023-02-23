@@ -15,8 +15,8 @@ public class CutsceneManager : MonoBehaviour
     }
     private IEnumerator cutscene1(GameObject gameObj)
     {
-        GameObject player = PlayerController.playerObj;
-        PlayerController.inCutscene = true;
+        GameObject player = PlayerController.s_PlayerObj;
+        PlayerController.s_InCutscene = true;
         dialogueManager = GameObject.FindObjectOfType<DialogueManager>();
         Dialogue[] dInfo = {
             new Dialogue("xd", "xddddddddddddddddd"),
@@ -25,6 +25,6 @@ public class CutsceneManager : MonoBehaviour
         dialogueManager.startDialogue(dInfo);
         dialogueManager.currentTrigger = gameObj;
         yield return new WaitForSeconds(0.0f);
-        PlayerController.inCutscene = false;
+        PlayerController.s_InCutscene = false;
     }
 }

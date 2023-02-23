@@ -52,7 +52,7 @@ public class DialogueManager : MonoBehaviour
     public void startDialogue(Dialogue[] dialogue, bool m = false)
     {
         manual = m;
-        PlayerController.inCutscene = true;
+        PlayerController.s_InCutscene = true;
         dialogueUI = GameObject.FindWithTag("DialogueUI");
         foreach (Transform child in dialogueUI.transform)
         {
@@ -94,7 +94,7 @@ public class DialogueManager : MonoBehaviour
         {
             child.gameObject.SetActive(false);
         }
-        PlayerController.inCutscene = false;
+        PlayerController.s_InCutscene = false;
         dialoguer = null;
         VCam.Follow = controller.gameObject.transform;
         if (currentTrigger != null)

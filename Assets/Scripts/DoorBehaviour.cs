@@ -30,13 +30,13 @@ public class DoorBehaviour : MonoBehaviour
         if (enterDoor) { return; }
         xDiff = Mathf.Abs(player.transform.position.x - transform.position.x);
         yDiff = Mathf.Abs(player.transform.position.y - transform.position.y);
-        if (Input.GetKeyDown(KeyCode.W) && xDiff <= 0.75f && yDiff <= 0.75f && controller.grounded && !enterDoor)
+        if (Input.GetKeyDown(KeyCode.W) && xDiff <= 0.75f && yDiff <= 0.75f && controller.Grounded && !enterDoor)
         {
             player.GetComponent<Rigidbody2D>().velocity = Vector2.zero;
-            PlayerController.inCutscene = true;
-            PlayerController.spawnPosition = spawnPoint;
+            PlayerController.s_InCutscene = true;
+            PlayerController.s_SpawnPosition = spawnPoint;
             enterDoor = true;
-            StartCoroutine(PlayerController.playerScript.FadeIn(sceneName));
+            StartCoroutine(PlayerController.s_PlayerScript.FadeIn(sceneName));
         }
     }
 

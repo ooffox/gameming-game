@@ -21,8 +21,8 @@ public class DinoBehaviour : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        playerScript = PlayerController.playerScript;
-        playerObj = PlayerController.playerObj;
+        playerScript = PlayerController.s_PlayerScript;
+        playerObj = PlayerController.s_PlayerObj;
         Animator = GetComponent<Animator>();
         Rigidbody2D = GetComponent<Rigidbody2D>();
         Collider2D = GetComponent<Collider2D>();

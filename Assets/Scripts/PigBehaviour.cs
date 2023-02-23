@@ -13,14 +13,14 @@ public class PigBehaviour : MonoBehaviour
     public float runSpeed;
     private float direction = 1;
     private GameObject player;
-    private PlayerController playerScript;
+    private PlayerController _playerScript;
     private Rigidbody2D Rigidbody2D;
     private Animator Animator;
     // Start is called before the first frame update
     void Start()
     {
-        player = PlayerController.playerObj;
-        playerScript = PlayerController.playerScript;
+        player = PlayerController.s_PlayerObj;
+        _playerScript = PlayerController.s_PlayerScript;
         lastDirected = Time.time;
         Rigidbody2D = GetComponent<Rigidbody2D>();
         Animator = GetComponent<Animator>();
@@ -29,7 +29,7 @@ public class PigBehaviour : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (PlayerController.playerScript.dead)
+        if (PlayerController.s_PlayerScript.Dead)
         {
             this.enabled = false;
         }
@@ -82,7 +82,7 @@ public class PigBehaviour : MonoBehaviour
                 dir = -1.0f;
             }
             else { dir = 1.0f; }
-            playerScript.boost(dir, 1.0f, pushForce);
+            _playerScript.Boost(dir, 1.0f, pushForce);
         }
         else if (collided.tag != "Player")
         {

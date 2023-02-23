@@ -8,244 +8,321 @@ using Cinemachine;
 
 public class PlayerController : MonoBehaviour
 {
-    public static GameObject playerObj;
-    public static PlayerController playerScript;
-    public static Vector2 spawnPosition = Vector2.zero;
-    private static int lives = 3;
-    public static bool inCutscene = false;
-    public float runSpeed;
-    public float jumpForce;
-    public bool grounded;
-    private float horizontal;
-    private float vertical;
-    public float correctDir;
-    private float fadeCount;
-    private float fadeSpeed = 0.02f;
-    public float boostForce;
+    public bool Dead { get; private set; }
+    public bool Grounded { get; private set; }
     public bool canFly;
-    private bool boosting;
-    public bool dead;
-    private float lastJumped = 0.0f;
-    private float lastTryJump = 0.0f;
-    private bool jumped;
-    private RaycastHit2D rayHit;
-    private Vector2 boostDir;
-    private Rigidbody2D Rigidbody2D;
-    private Animator Animator;
-    private GameObject Manager;
-    private AudioSource AudioSource;
-    private Collider2D Collider2D;
-    public AudioClip deathSound;
-    public AudioClip jumpSound;
-    private Image fadeImage;
+    public float BoostForce;
 
-    // Start is called before the first frame update
+    [System.NonSerialized]
+    public float CorrectDir;
+    public static bool s_InCutscene = false;
+    public static GameObject s_PlayerObj;
+    public static PlayerController s_PlayerScript;
+    public static Vector2 s_SpawnPosition = Vector2.zero;
+    public AudioClip DeathSound;
+    public AudioClip JumpSound;
+    public float RunSpeed;
+    public float JumpForce;
+
+    private bool _boosting;
+    private float _horizontal;
+    private float _vertical;
+    private float _fadeCount;
+    private float _fadeSpeed = 0.02f;
+    private float _lastJumped = 0.0f;
+    private float _lastTryJump = 0.0f;
+    private RaycastHit2D _rayHit;
+    private Vector2 _boostDir;
+    private Rigidbody2D _rigidbody2D;
+    private Animator _animator;
+    private GameObject _manager;
+    private AudioSource _audioSource;
+    private Collider2D _collider2D;
+    private Image _fadeImage;
+
+    #region Events
+
     void Start()
     {
-        playerObj = gameObject;
-        playerScript = this;
-        fadeImage = GameObject.FindWithTag("FadeImage").GetComponent<Image>();
-        fadeImage.color = new Color(0.0f, 0.0f, 0.0f, 1.0f);
-        StartCoroutine(FadeOut());
-        if (spawnPosition != Vector2.zero)
-        {
-            transform.position = spawnPosition;
-            inCutscene = false;
-        }
-        Rigidbody2D = GetComponent<Rigidbody2D>();
-        Animator = GetComponent<Animator>();
-        Collider2D = GetComponent<Collider2D>();
-        Manager = GameObject.FindWithTag("GameManager");
-        AudioSource = Manager.GetComponent<AudioSource>();
-        Rigidbody2D.gravityScale = PlayerStats.gravity;
+        s_PlayerObj = gameObject;
+        s_PlayerScript = this;
+        StartFade();
+        CheckSpawnPos();
+        InitializeStartVariables();
     }
 
-    // Update is called once per frame
+
     void Update()
     {
-        if (Time.timeScale == 0.0f) { return; }
-        changeDirection();
-        if (fadeImage.color.a > 0.0f)
+        if (IsPaused() || IsFading() || CheckDead()) 
         {
             return;
         }
-        if (dead || inCutscene)
-        {
-            horizontal = 0.0f;
-            initAnim();
-            return;
-        }
-        rayHit = Physics2D.Raycast(transform.position, Vector2.down, 2.035f);
-        grounded = isGrounded();
-        horizontal = Input.GetAxisRaw("Horizontal");
-        if (Input.GetKeyDown(KeyCode.W)) 
-        {
-            lastTryJump = Time.time;
-        }
-        if ((canJump() || canFly))
-        {
-            Rigidbody2D.velocity = Vector2.zero;
-            Rigidbody2D.AddForce(Vector2.up * jumpForce * Rigidbody2D.mass);
-            lastJumped = Time.time;
-        }
-        if (canBoost())
-        {
-            vertical = Input.GetAxisRaw("Vertical");
-            if (horizontal == 0.0f && vertical == 0.0f)
-            {
-                return;
-            }
-            boost(horizontal, vertical, boostForce);
-        }
-        
-        if (boosting && grounded)
-        {
-            boosting = false;
-        }
-        
-        initAnim();
+
+        ChangeDirection();
+
+        UpdateMovementVariables();
+
+        CheckLastTriedJump();
+
+        CheckJump();
+
+        CheckBoost();
+
+        InitializeAnimation();
+    
     }
+
+    
     void FixedUpdate()
     {
-        if (boosting)
+        if (_boosting)
         {
             return;
         }
-        Rigidbody2D.velocity = new Vector2(runSpeed * horizontal, Mathf.Clamp(Rigidbody2D.velocity.y, -20.0f, Mathf.Infinity));
+        _rigidbody2D.velocity = new Vector2(RunSpeed * _horizontal, Mathf.Clamp(_rigidbody2D.velocity.y, -20.0f, Mathf.Infinity));
     }
 
-    private bool canBoost()
-    {
-        return Input.GetKeyDown(KeyCode.Space) && !boosting && PlayerStats.hasBoots;
-    }
 
-    public void boost(float dirx, float diry, float force)
+    void OnTriggerEnter2D(Collider2D col)
     {
-        AudioSource.PlayOneShot(jumpSound);
-        boostDir = new Vector2(dirx, diry);
-        Rigidbody2D.velocity = Vector2.zero;
-        Rigidbody2D.AddForce(boostDir * force * Rigidbody2D.mass);
-        boosting = true;
-    }
-
-    private float changeDirection()
-    {
-        correctDir = determineDirection();
-        transform.localScale = new Vector3(Mathf.Abs(transform.localScale.x) * correctDir, transform.localScale.y, transform.localScale.z);
-        return correctDir;
-    }
-
-    private bool isGrounded()
-    {
-        if (rayHit)
+        switch (col.gameObject.tag)
         {
-            if (rayHit.collider.isTrigger) { return false; }
+            case "Leatherboots":
+                PlayerStats.hasBoots = true;
+                PlayerStats.gravity -= 1.0f;
+                _rigidbody2D.gravityScale = PlayerStats.gravity;
+                break;
+
+            case "Spanner":
+                PlayerStats.numberOfSpanners += 1;
+                break;
+        }
+    }
+
+    #endregion
+
+
+    #region Variable Assignation
+
+    private void InitializeAnimation()
+    {
+        _animator.SetBool("running", !Dead && Grounded && _horizontal != 0.0f);
+        _animator.SetBool("rising", !Dead && !Grounded && _rigidbody2D.velocity.y > 0.0f);
+        _animator.SetBool("falling", !Dead && !Grounded && _rigidbody2D.velocity.y < 0.0f);
+        _animator.SetBool("crouching", !Dead && !s_InCutscene && Grounded && _horizontal == 0.0f && Input.GetKey(KeyCode.S));
+        _animator.SetBool("dead", Dead);
+    }
+
+    private void InitializeStartVariables()
+    {
+        _rigidbody2D = GetComponent<Rigidbody2D>();
+        _animator = GetComponent<Animator>();
+        _collider2D = GetComponent<Collider2D>();
+        _manager = GameObject.FindWithTag("GameManager");
+        _audioSource = _manager.GetComponent<AudioSource>();
+        _rigidbody2D.gravityScale = PlayerStats.gravity;
+    }
+
+    private void UpdateMovementVariables()
+    {
+        _rayHit = Physics2D.Raycast(transform.position, Vector2.down, 2.035f);
+        Grounded = IsGrounded();
+        _horizontal = Input.GetAxisRaw("Horizontal");
+        _vertical = Input.GetAxisRaw("Vertical");
+    }
+
+    #endregion
+
+
+    #region Checks
+
+    private void CheckBoost()
+    {
+        if (_boosting && Grounded)
+        {
+            _boosting = false;
+        }
+        if (CanBoost())
+        {
+            Boost(_horizontal, _vertical, BoostForce);
+        }
+    }
+
+    private void CheckJump()
+    {
+        if ((CanJump() || canFly))
+        {
+            Jump();
+        }
+    }
+
+    private void CheckLastTriedJump()
+    {
+        if (Input.GetKeyDown(KeyCode.W)) 
+        {
+            _lastTryJump = Time.time;
+        }
+    }
+
+    private bool CheckDead()
+    {
+        if (Dead || s_InCutscene)
+        {
+            _horizontal = 0.0f;
+            InitializeAnimation();
+            return true;
+        }
+
+        return false;
+    }
+
+    private bool IsPaused()
+    {
+        return Time.timeScale == 0.0f;
+    }
+
+    private bool IsFading()
+    {
+        return _fadeImage.color.a > 0.0f;
+    }
+
+    private bool IsGrounded()
+    {
+        if (_rayHit)
+        {
+            if (_rayHit.collider.isTrigger) { return false; }
             else { return true; }
         }
         return false;
     }
 
-    private bool canJump()
+    private bool CanBoost()
     {
-        Debug.Log(Time.time - lastJumped);
-        return grounded && Time.time - lastTryJump < 0.2f && Time.time - lastJumped > 0.1f;
+        return Input.GetKeyDown(KeyCode.Space) && !_boosting && PlayerStats.hasBoots && (_horizontal != 0.0f || _vertical != 0.0f);
     }
 
-
-    private float determineDirection()
+    private bool CanJump()
     {
-        if (horizontal > 0.0f)
+        return Grounded && Time.time - _lastTryJump < 0.15f && Time.time - _lastJumped > 0.05f;
+    }
+    
+    void CheckSpawnPos()
+    {
+        if (s_SpawnPosition != Vector2.zero)
         {
-            return 1.0f;
+            transform.position = s_SpawnPosition;
+            s_InCutscene = false;
         }
-        else if (horizontal < 0.0f)
-        {
-            return -1.0f;
-        }
-        return transform.localScale.x < 0.0f ? -1.0f : 1.0f;
     }
 
-    public void die()
+    #endregion
+
+
+    #region Player Actions
+
+    public void Boost(float dirx, float diry, float force)
     {
-        AudioSource.Stop();
-        AudioSource.PlayOneShot(deathSound);
-        dead = true;
-        Rigidbody2D.velocity = Vector2.zero;
+        _audioSource.PlayOneShot(JumpSound);
+        _boostDir = new Vector2(dirx, diry);
+        _rigidbody2D.velocity = Vector2.zero;
+        _rigidbody2D.AddForce(_boostDir * force * _rigidbody2D.mass);
+        _boosting = true;
+    }
+
+    void Jump()
+    {
+        _rigidbody2D.velocity = Vector2.zero;
+        _rigidbody2D.AddForce(Vector2.up * JumpForce * _rigidbody2D.mass);
+        _lastJumped = Time.time;
+    }
+
+    public void Die()
+    {
+        _audioSource.Stop();
+        _audioSource.PlayOneShot(DeathSound);
+        Dead = true;
+        _rigidbody2D.velocity = Vector2.zero;
         GameObject.FindObjectOfType<CameraBehaviour>().enabled = false;
         GameObject.FindObjectOfType<CinemachineBrain>().enabled = false;
         GetComponent<CapsuleCollider2D>().enabled = false;
-        StartCoroutine(deathBoost());
+        StartCoroutine(DeathBoost());
         foreach(EnemyBehaviour obj in GameObject.FindObjectsOfType<EnemyBehaviour>())
         {
             obj.playerDead();
         }
     }
 
-    IEnumerator deathBoost()
+    IEnumerator DeathBoost()
     {
-        Animator.SetBool("dead", true);
-        Rigidbody2D.isKinematic = true;
+        _rigidbody2D.isKinematic = true;
         yield return new WaitForSeconds(1.10f);
-        Rigidbody2D.isKinematic = false;
-        Rigidbody2D.AddForce(Vector2.up * 1250 * Rigidbody2D.mass);
+        _rigidbody2D.isKinematic = false;
+        _rigidbody2D.AddForce(Vector2.up * 1250 * _rigidbody2D.mass);
         yield return new WaitForSeconds(3.0f);
         StartCoroutine(FadeIn(SceneManager.GetActiveScene().name));
     }
 
-    private void initAnim()
+    #endregion
+
+
+    #region UI
+
+    void StartFade()
     {
-        Animator.SetBool("running", !dead && grounded && horizontal != 0.0f);
-        Animator.SetBool("rising", !dead && !grounded && Rigidbody2D.velocity.y > 0.0f);
-        Animator.SetBool("falling", !dead && !grounded && Rigidbody2D.velocity.y < 0.0f);
-        Animator.SetBool("crouching", !dead && !inCutscene && grounded && horizontal == 0.0f && Input.GetKey(KeyCode.S));
-        Animator.SetBool("dead", dead);
-        Animator.SetBool("stabbing", Input.GetKey(KeyCode.E));
+        _fadeImage = GameObject.FindWithTag("FadeImage").GetComponent<Image>();
+        _fadeImage.color = new Color(0.0f, 0.0f, 0.0f, 1.0f);
+        StartCoroutine(FadeOut());
     }
 
-    void OnTriggerEnter2D(Collider2D col)
-    {
-        switch (col.gameObject.tag)
-        {
-            case "Deathzone":
-            case "Spike":
-                die();
-                break;
-            case "Leatherboots":
-                PlayerStats.hasBoots = true;
-                PlayerStats.gravity -= 1.0f;
-                Rigidbody2D.gravityScale = PlayerStats.gravity;
-                break;
-
-            case "Spanner":
-                PlayerStats.numberOfSpanners += 1;
-                break;
-
-            
-        }
-    }
-
-    public IEnumerator FadeOut()
-    {
-        fadeCount = 1.0f; //initial alpha value
-        while (fadeCount > 0.0f)
-        {
-            fadeCount -= fadeSpeed; //lower alpha value 0.01 per 0.01 second 
-            yield return new WaitForSeconds(0.01f); //per 0.01 second
-            fadeImage.color = new Color(0, 0, 0, fadeCount); //makes image look opaque
-        }
-    }
-    
     public IEnumerator FadeIn(string sName)
     {
-        fadeCount = 0.0f; //initial alpha value
+        _fadeCount = 0.0f; //initial alpha value
 
-        while (fadeCount < 1.0f)
+        while (_fadeCount < 1.0f)
         {
-            fadeCount += fadeSpeed; //lower alpha value 0.01 per 0.01 second 
+            _fadeCount += _fadeSpeed; //lower alpha value 0.01 per 0.01 second 
             yield return new WaitForSeconds(0.01f); //per 0.01 second
-            fadeImage.color = new Color(0, 0, 0, fadeCount); //makes image look transparent  
+            _fadeImage.color = new Color(0, 0, 0, _fadeCount); //makes image look transparent  
         }
         SceneManager.LoadScene(sName);
     }
 
+    public IEnumerator FadeOut()
+    {
+        _fadeCount = 1.0f; //initial alpha value
+        while (_fadeCount > 0.0f)
+        {
+            _fadeCount -= _fadeSpeed; //lower alpha value 0.01 per 0.01 second 
+            yield return new WaitForSeconds(0.01f); //per 0.01 second
+            _fadeImage.color = new Color(0, 0, 0, _fadeCount); //makes image look opaque
+        }
+    }
+
+    #endregion
+
+    
+    #region Miscellaneous
+    
+    private float ChangeDirection()
+    {
+        CorrectDir = determineDirection();
+        transform.localScale = new Vector3(Mathf.Abs(transform.localScale.x) * CorrectDir, transform.localScale.y, transform.localScale.z);
+        return CorrectDir;
+    }
+
+    private float determineDirection()
+    {
+        if (_horizontal > 0.0f)
+        {
+            return 1.0f;
+        }
+        else if (_horizontal < 0.0f)
+        {
+            return -1.0f;
+        }
+        return transform.localScale.x < 0.0f ? -1.0f : 1.0f;
+    }
+
+    #endregion
 }

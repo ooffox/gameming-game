@@ -24,14 +24,23 @@ public class EnemyBehaviour : MonoBehaviour
     {
         if (col.collider.gameObject.tag == "Player" && dangerous)
         {
-            PlayerController.playerScript.die();
+            PlayerController.s_PlayerScript.Die();
         }
     }
 
     public void playerDead()
     {
-        Rigidbody2D.velocity = Vector2.zero;
-        Rigidbody2D.isKinematic = true;
-        Animator.enabled = false;
+        if (Rigidbody2D.bodyType == RigidbodyType2D.Dynamic)
+        {
+            Rigidbody2D.velocity = Vector2.zero;
+            Rigidbody2D.isKinematic = true;
+            Rigidbody2D.constraints = RigidbodyConstraints2D.FreezeRotation;
+        }
+        
+        if (Animator)
+        {
+            Animator.enabled = false;
+        }
+        
     }
 }
