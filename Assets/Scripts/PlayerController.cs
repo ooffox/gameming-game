@@ -12,7 +12,6 @@ public class PlayerController : MonoBehaviour
     public bool Grounded { get; private set; }
     public bool canFly;
     public float BoostForce;
-
     [System.NonSerialized]
     public float CorrectDir;
     public static bool s_InCutscene = false;
@@ -21,8 +20,8 @@ public class PlayerController : MonoBehaviour
     public static Vector2 s_SpawnPosition = Vector2.zero;
     public AudioClip DeathSound;
     public AudioClip JumpSound;
-    public float RunSpeed;
-    public float JumpForce;
+    private float RunSpeed = 10.0f;
+    private float JumpForce = 750.0f;
 
     private bool _boosting;
     private float _horizontal;
@@ -80,7 +79,7 @@ public class PlayerController : MonoBehaviour
         {
             return;
         }
-        _rigidbody2D.velocity = new Vector2(RunSpeed * _horizontal, Mathf.Clamp(_rigidbody2D.velocity.y, -20.0f, Mathf.Infinity));
+        UpdateVelocity();
     }
 
 
@@ -151,7 +150,7 @@ public class PlayerController : MonoBehaviour
 
     private void CheckJump()
     {
-        if ((CanJump() || canFly))
+        if (CanJump() || (canFly && Input.GetKeyDown(KeyCode.W)))
         {
             Jump();
         }
@@ -253,6 +252,16 @@ public class PlayerController : MonoBehaviour
         }
     }
 
+    #endregion
+
+
+    #region Physics
+
+    void UpdateVelocity()
+    {
+        _rigidbody2D.velocity = new Vector2(RunSpeed * _horizontal, Mathf.Clamp(_rigidbody2D.velocity.y, -20.0f, Mathf.Infinity));
+    }
+
     IEnumerator DeathBoost()
     {
         _rigidbody2D.isKinematic = true;
@@ -262,6 +271,8 @@ public class PlayerController : MonoBehaviour
         yield return new WaitForSeconds(3.0f);
         StartCoroutine(FadeIn(SceneManager.GetActiveScene().name));
     }
+
+    
 
     #endregion
 

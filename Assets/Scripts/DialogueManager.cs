@@ -4,10 +4,9 @@ using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 using Cinemachine;
-
+using UnityEngine.SceneManagement;
 public class DialogueManager : MonoBehaviour
 {
-    public float moveCameraSpeed;
     private bool manual;
     private bool finishedLoading = false;
     private bool isTimed = false;
@@ -27,7 +26,12 @@ public class DialogueManager : MonoBehaviour
     [System.NonSerialized]
     public GameObject currentTrigger;
 
-    void Start()
+    void Awake()
+    {
+        SceneManager.sceneLoaded += LoadStartVariables;
+    }
+
+    void LoadStartVariables(Scene scene, LoadSceneMode mode)
     {
         cameraBehaviour = GameObject.FindObjectOfType<CameraBehaviour>();
         AudioSource = GetComponent<AudioSource>();
@@ -36,9 +40,9 @@ public class DialogueManager : MonoBehaviour
 
     void Update()
     {
-        if (Input.GetKeyDown(KeyCode.Space) && currentTrigger != null && finishedLoading && !isTimed && !manual)
+        if (CanContinue())
         {
-            loadNextSentence();
+            LoadNextSentence();
             finishedLoading = false;
         }
         /*
@@ -49,7 +53,12 @@ public class DialogueManager : MonoBehaviour
         */
     }
 
-    public void startDialogue(Dialogue[] dialogue, bool m = false)
+    private bool CanContinue()
+    {
+        return Input.GetKeyDown(KeyCode.Space) && currentTrigger != null && finishedLoading && !isTimed && !manual;
+    }
+
+    public void StartDialogue(Dialogue[] dialogue, bool m = false)
     {
         manual = m;
         PlayerController.s_InCutscene = true;
@@ -65,14 +74,14 @@ public class DialogueManager : MonoBehaviour
             sentences.Enqueue(dial);
         }
         loadedText = "";
-        loadNextSentence();
+        LoadNextSentence();
     }
 
-    public void loadNextSentence()
+    public void LoadNextSentence()
     {
         if (sentences.Count == 0)
         {
-            endDialogue();
+            EndDialogue();
             return;
         }
         newSentence = sentences.Dequeue();
@@ -80,13 +89,9 @@ public class DialogueManager : MonoBehaviour
         dialogueName.text = newSentence.name;
         dialoguer = newSentence.dialoguer;
         VCam.Follow = dialoguer.transform;
-        if (dialoguer)
-        {
-            // cameraBehaviour.enabled = false;
-        }
     }
 
-    void endDialogue()
+    void EndDialogue()
     {
         // cameraBehaviour.enabled = true;
         finishedLoading = false;

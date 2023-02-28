@@ -22,7 +22,7 @@ public class CutsceneManager : MonoBehaviour
             new Dialogue("xd", "xddddddddddddddddd"),
             new Dialogue("bruh", "bruhhsfisfbashilfbals")
         };
-        dialogueManager.startDialogue(dInfo);
+        dialogueManager.StartDialogue(dInfo);
         dialogueManager.currentTrigger = gameObj;
         yield return new WaitForSeconds(0.0f);
         PlayerController.s_InCutscene = false;

@@ -21,7 +21,7 @@ public class DialogueTrigger : MonoBehaviour
     }
     private void triggerDialogue(Dialogue[] dialogue, bool manual = false)
     {
-        DialogueManager.startDialogue(dialogue, manual);
+        DialogueManager.StartDialogue(dialogue, manual);
         DialogueManager.currentTrigger = gameObject;
         Destroy(GetComponent<Collider2D>());
     }
@@ -30,6 +30,7 @@ public class DialogueTrigger : MonoBehaviour
     {
         if (col.gameObject.tag == "Player")
         {
+            col.gameObject.GetComponent<Rigidbody2D>().velocity = Vector2.zero;
             triggerDialogue(dialogue);
         }
         

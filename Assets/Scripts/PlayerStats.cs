@@ -6,7 +6,7 @@ public static class PlayerStats
 {
     private const int _numberOfSpanners = 0;
     private const float _gravity = 4.0f;
-    private const bool _hasBoots = false;
+    private const bool _hasBoots = true;
     private const bool _hasGoldenBoots = false;
 
     public static int numberOfSpanners = _numberOfSpanners;

@@ -25,6 +25,7 @@ TagManager:
   - ResumeUI
   - ExitUI
   - SaveUI
+  - Tilemap
   layers:
   - Default
   - TransparentFX
