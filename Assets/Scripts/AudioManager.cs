@@ -6,6 +6,7 @@ public class AudioManager : MonoBehaviour
 {
     private AudioSource AudioSource;
     private static GameObject manager;
+    private Coroutine currentPlayer;
     public AudioClip stageMusic;
     public AudioClip stageMusicPrelude;
     public AudioClip currentClip;
@@ -19,11 +20,15 @@ public class AudioManager : MonoBehaviour
         else if (manager == null)
         {
             manager = gameObject;
+            SceneManager.sceneLoaded += PlayMusic;
         }
         else
         {
-            manager.GetComponent<AudioManager>().stageMusic = stageMusic;
-            manager.GetComponent<AudioManager>().stageMusicPrelude = stageMusicPrelude;
+            AudioManager audioManager = manager.GetComponent<AudioManager>();
+            audioManager.stageMusic = stageMusic;
+            audioManager.stageMusicPrelude = stageMusicPrelude;
+            audioManager.StopCoroutine(audioManager.currentPlayer);
+            manager.GetComponent<AudioSource>().Stop();
             Destroy(gameObject);
         }
         DontDestroyOnLoad(gameObject);
@@ -31,36 +36,46 @@ public class AudioManager : MonoBehaviour
 
     void Start()
     {
-        SceneManager.sceneLoaded += OnSceneLoad;
-        OnSceneLoad(SceneManager.GetActiveScene(), LoadSceneMode.Single);      
+            
     }
 
-    void OnSceneLoad(Scene scene, LoadSceneMode mode)
+    void PlayMusic(Scene scene, LoadSceneMode mode)
     {
-        SceneManager.sceneLoaded += OnSceneLoad;
         AudioSource = GetComponent<AudioSource>();
-        if (AudioSource.clip == stageMusic && AudioSource.isPlaying)
+        if (AudioSource.clip == stageMusic || stageMusic == null)
         {
             return;
         }
-        if (stageMusic != null)
+        if (stageMusicPrelude)
         {
-            AudioSource.clip = stageMusic;
-            AudioSource.loop = true;
-            if (stageMusicPrelude)
-            {
-                AudioSource.PlayOneShot(stageMusicPrelude);
-                AudioSource.PlayDelayed(stageMusicPrelude.length);
-            }
-            else {
-                AudioSource.Play();
-            }
-            
+            PlayPreludeMusic();
+            currentPlayer = StartCoroutine(PlayStageMusicDelayed(stageMusicPrelude.length));
         }
+        else {
+            StartCoroutine(PlayStageMusicDelayed());
+        }
+            
+
     }
 
     // Update is called once per frame
     void Update()
     {
+    }
+
+    void PlayPreludeMusic()
+    {
+        AudioSource.loop = false;
+        AudioSource.clip = stageMusicPrelude;
+        AudioSource.Play();
+    }
+
+    IEnumerator PlayStageMusicDelayed(float _waitTime = 0.0f)
+    {
+        yield return new WaitForSeconds(_waitTime);
+        AudioSource.loop = true;
+        AudioSource.clip = stageMusic;
+        AudioSource.Play();
+        Debug.Log("playing");
     }
 }
