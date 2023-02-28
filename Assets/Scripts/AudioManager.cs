@@ -11,6 +11,7 @@ public class AudioManager : MonoBehaviour
     public AudioClip stageMusicPrelude;
     public AudioClip currentClip;
     
+
     void Awake()
     {
         if (manager == gameObject)
@@ -21,22 +22,18 @@ public class AudioManager : MonoBehaviour
         {
             manager = gameObject;
             SceneManager.sceneLoaded += PlayMusic;
+            PlayMusic(SceneManager.GetActiveScene(), LoadSceneMode.Single);
         }
         else
         {
             AudioManager audioManager = manager.GetComponent<AudioManager>();
+            audioManager.StopCoroutine(audioManager.currentPlayer);
             audioManager.stageMusic = stageMusic;
             audioManager.stageMusicPrelude = stageMusicPrelude;
-            audioManager.StopCoroutine(audioManager.currentPlayer);
             manager.GetComponent<AudioSource>().Stop();
             Destroy(gameObject);
         }
         DontDestroyOnLoad(gameObject);
-    }
-
-    void Start()
-    {
-            
     }
 
     void PlayMusic(Scene scene, LoadSceneMode mode)
@@ -76,6 +73,5 @@ public class AudioManager : MonoBehaviour
         AudioSource.loop = true;
         AudioSource.clip = stageMusic;
         AudioSource.Play();
-        Debug.Log("playing");
     }
 }

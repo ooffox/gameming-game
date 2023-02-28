@@ -14,7 +14,6 @@ public class DoorBehaviour : MonoBehaviour
     private float xDiff;
     private float yDiff;
     private float fadeCount;
-    private float fadeSpeed = 0.02f;
     private PlayerController controller;
     // Start is called before the first frame update
     void Start()

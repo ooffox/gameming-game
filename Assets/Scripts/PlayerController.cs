@@ -38,6 +38,7 @@ public class PlayerController : MonoBehaviour
     private AudioSource _audioSource;
     private Collider2D _collider2D;
     private Image _fadeImage;
+    private LayerMask _ownMask;
 
     #region Events
 
@@ -121,11 +122,12 @@ public class PlayerController : MonoBehaviour
         _manager = GameObject.FindWithTag("GameManager");
         _audioSource = _manager.GetComponent<AudioSource>();
         _rigidbody2D.gravityScale = PlayerStats.gravity;
+        _ownMask = LayerMask.GetMask("Player");
     }
 
     private void UpdateMovementVariables()
     {
-        _rayHit = Physics2D.Raycast(transform.position, Vector2.down, 2.035f);
+        _rayHit = Physics2D.Raycast(transform.position, Vector2.down, 2.035f, ~_ownMask);
         Grounded = IsGrounded();
         _horizontal = Input.GetAxisRaw("Horizontal");
         _vertical = Input.GetAxisRaw("Vertical");

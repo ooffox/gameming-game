@@ -8,6 +8,8 @@ public class CollectibleBehaviour : MonoBehaviour
     private Vector3 startPos;
     private Animator Animator;
     private DialogueManager manager;
+    public AudioClip ObtainSound;
+    private AudioSource _audioSource;
     void Awake()
     {
         startPos = transform.position;
@@ -15,6 +17,7 @@ public class CollectibleBehaviour : MonoBehaviour
 
     void Start()
     {
+        _audioSource = GameObject.FindWithTag("GameManager").GetComponent<AudioSource>();
         if (CollectibleManager.getCollected().Contains(startPos))
         {
             Destroy(gameObject);
@@ -27,8 +30,10 @@ public class CollectibleBehaviour : MonoBehaviour
     {
         if (col.gameObject.tag == "Player")
         {
+            GetComponent<Collider2D>().enabled = false;
             CollectibleManager.addCollected(startPos);
-            Animator.SetBool("collected", true);
+            Animator.Play("ItemCollected");
+            _audioSource.PlayOneShot(ObtainSound);
         }
     }
 
