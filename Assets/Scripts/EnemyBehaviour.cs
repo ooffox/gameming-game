@@ -7,11 +7,13 @@ public class EnemyBehaviour : MonoBehaviour
     public bool dangerous;
     private Rigidbody2D Rigidbody2D;
     private Animator Animator;
+    private AudioManager AudioManager;
     // Start is called before the first frame update
     void Start()
     {
         Rigidbody2D = GetComponent<Rigidbody2D>();
         Animator = GetComponent<Animator>();
+        AudioManager = GameObject.FindWithTag("GameManager").GetComponent<AudioManager>();
     }
 
     // Update is called once per frame
@@ -25,6 +27,7 @@ public class EnemyBehaviour : MonoBehaviour
         if (col.collider.gameObject.tag == "Player" && dangerous)
         {
             PlayerController.s_PlayerScript.Die();
+            AudioManager.StopStageMusic();
         }
     }
 

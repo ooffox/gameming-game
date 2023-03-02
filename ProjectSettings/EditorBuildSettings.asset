@@ -17,4 +17,7 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/Cave.unity
     guid: f230a893bba2b7343981d567d61036a8
+  - enabled: 1
+    path: Assets/Scenes/2Greenlands.unity
+    guid: 727a98c48db229b4aa18e1a81fb8c1d2
   m_configObjects: {}

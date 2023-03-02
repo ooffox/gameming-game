@@ -6,7 +6,8 @@ using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 public class DoorBehaviour : MonoBehaviour
 {
-    public Vector3 spawnPoint;
+    public bool ChangeScene;
+    public Vector2 spawnPoint;
     public string sceneName;
     private GameObject player;
     private Image fadeImage;
@@ -20,23 +21,38 @@ public class DoorBehaviour : MonoBehaviour
     {
         player = GameObject.FindWithTag("Player");
         controller = player.GetComponent<PlayerController>();
-        
         fadeImage = GameObject.FindWithTag("FadeImage").GetComponent<Image>();
     }
 
     void Update()
     {
-        if (enterDoor) { return; }
+        if (fadeImage.color.a != 0.0f) { return; }
+        CheckDistance();
+        if (Input.GetKeyDown(KeyCode.W) && IsClose() && controller.Grounded)
+        {
+            EnterDoor();
+        }
+    }
+
+    void CheckDistance()
+    {
         xDiff = Mathf.Abs(player.transform.position.x - transform.position.x);
         yDiff = Mathf.Abs(player.transform.position.y - transform.position.y);
-        if (Input.GetKeyDown(KeyCode.W) && xDiff <= 0.75f && yDiff <= 0.75f && controller.Grounded && !enterDoor)
-        {
-            player.GetComponent<Rigidbody2D>().velocity = Vector2.zero;
-            PlayerController.s_InCutscene = true;
-            PlayerController.s_SpawnPosition = spawnPoint;
-            enterDoor = true;
-            StartCoroutine(PlayerController.s_PlayerScript.FadeIn(sceneName));
-        }
+    }
+
+    bool IsClose()
+    {
+        return xDiff <= 0.75f && yDiff <= 0.75f;
+    }
+
+    void EnterDoor()
+    {
+        player.GetComponent<Rigidbody2D>().velocity = Vector2.zero;
+        PlayerController.s_InCutscene = true;
+        PlayerController.s_SpawnPosition = spawnPoint;
+        enterDoor = true;
+        if (ChangeScene) { StartCoroutine(PlayerController.s_PlayerScript.FadeIn(sceneName, Vector2.zero)); }
+        else { StartCoroutine(PlayerController.s_PlayerScript.FadeIn("", spawnPoint)); }
     }
 
     public void loadScene()

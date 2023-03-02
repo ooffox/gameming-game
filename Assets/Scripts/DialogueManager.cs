@@ -28,6 +28,7 @@ public class DialogueManager : MonoBehaviour
 
     void Awake()
     {
+        if (AudioManager.manager && AudioManager.manager != gameObject) { return; }
         SceneManager.sceneLoaded += LoadStartVariables;
     }
 

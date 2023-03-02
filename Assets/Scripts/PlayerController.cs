@@ -47,7 +47,6 @@ public class PlayerController : MonoBehaviour
         s_PlayerObj = gameObject;
         s_PlayerScript = this;
         StartFade();
-        CheckSpawnPos();
         InitializeStartVariables();
     }
 
@@ -271,7 +270,7 @@ public class PlayerController : MonoBehaviour
         _rigidbody2D.isKinematic = false;
         _rigidbody2D.AddForce(Vector2.up * 1250 * _rigidbody2D.mass);
         yield return new WaitForSeconds(3.0f);
-        StartCoroutine(FadeIn(SceneManager.GetActiveScene().name));
+        StartCoroutine(FadeIn(SceneManager.GetActiveScene().name, Vector2.zero));
     }
 
     
@@ -285,30 +284,38 @@ public class PlayerController : MonoBehaviour
     {
         _fadeImage = GameObject.FindWithTag("FadeImage").GetComponent<Image>();
         _fadeImage.color = new Color(0.0f, 0.0f, 0.0f, 1.0f);
+        CheckSpawnPos();
         StartCoroutine(FadeOut());
     }
 
-    public IEnumerator FadeIn(string sName)
+    public IEnumerator FadeIn(string sName, Vector2 sPoint)
     {
-        _fadeCount = 0.0f; //initial alpha value
-
+        _fadeCount = 0.0f;
         while (_fadeCount < 1.0f)
         {
-            _fadeCount += _fadeSpeed; //lower alpha value 0.01 per 0.01 second 
-            yield return new WaitForSeconds(0.01f); //per 0.01 second
-            _fadeImage.color = new Color(0, 0, 0, _fadeCount); //makes image look transparent  
+            _fadeCount += _fadeSpeed; 
+            yield return new WaitForSeconds(0.01f);
+            _fadeImage.color = new Color(0, 0, 0, Mathf.Clamp(_fadeCount, 0.0f, 1.0f)); // You have to clamp the value cause otherwise it goes negative lol
         }
-        SceneManager.LoadScene(sName);
+        if (sName != "") 
+        {
+            s_SpawnPosition = sPoint;
+            SceneManager.LoadScene(sName);
+        }
+        else if (sPoint != Vector2.zero) {
+            s_SpawnPosition = sPoint;
+            StartFade();
+        }
     }
 
     public IEnumerator FadeOut()
     {
-        _fadeCount = 1.0f; //initial alpha value
+        _fadeCount = 1.0f;
         while (_fadeCount > 0.0f)
         {
-            _fadeCount -= _fadeSpeed; //lower alpha value 0.01 per 0.01 second 
-            yield return new WaitForSeconds(0.01f); //per 0.01 second
-            _fadeImage.color = new Color(0, 0, 0, _fadeCount); //makes image look opaque
+            _fadeCount -= _fadeSpeed;
+            yield return new WaitForSeconds(0.01f);
+            _fadeImage.color = new Color(0, 0, 0, Mathf.Clamp(_fadeCount, 0.0f, 1.0f)); // You have to clamp the value cause otherwise it goes negative lol
         }
     }
 

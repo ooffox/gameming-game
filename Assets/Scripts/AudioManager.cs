@@ -5,7 +5,7 @@ using UnityEngine.SceneManagement;
 public class AudioManager : MonoBehaviour
 {
     private AudioSource AudioSource;
-    private static GameObject manager;
+    public static GameObject manager;
     private Coroutine currentPlayer;
     public AudioClip stageMusic;
     public AudioClip stageMusicPrelude;
@@ -22,15 +22,12 @@ public class AudioManager : MonoBehaviour
         {
             manager = gameObject;
             SceneManager.sceneLoaded += PlayMusic;
-            PlayMusic(SceneManager.GetActiveScene(), LoadSceneMode.Single);
         }
         else
         {
             AudioManager audioManager = manager.GetComponent<AudioManager>();
-            audioManager.StopCoroutine(audioManager.currentPlayer);
             audioManager.stageMusic = stageMusic;
             audioManager.stageMusicPrelude = stageMusicPrelude;
-            manager.GetComponent<AudioSource>().Stop();
             Destroy(gameObject);
         }
         DontDestroyOnLoad(gameObject);
@@ -39,10 +36,15 @@ public class AudioManager : MonoBehaviour
     void PlayMusic(Scene scene, LoadSceneMode mode)
     {
         AudioSource = GetComponent<AudioSource>();
-        if (AudioSource.clip == stageMusic || stageMusic == null)
+        
+        if ((AudioSource.clip == stageMusic && AudioSource.isPlaying) || stageMusic == null)
         {
             return;
         }
+        if (currentPlayer != null) {
+            StopStageMusic();
+            currentPlayer = null;
+            }
         if (stageMusicPrelude)
         {
             PlayPreludeMusic();
@@ -55,10 +57,6 @@ public class AudioManager : MonoBehaviour
 
     }
 
-    // Update is called once per frame
-    void Update()
-    {
-    }
 
     void PlayPreludeMusic()
     {
@@ -73,5 +71,10 @@ public class AudioManager : MonoBehaviour
         AudioSource.loop = true;
         AudioSource.clip = stageMusic;
         AudioSource.Play();
+    }
+
+    public void StopStageMusic()
+    {
+        StopCoroutine(currentPlayer);
     }
 }
