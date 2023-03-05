@@ -33,12 +33,16 @@ public class CollectibleBehaviour : MonoBehaviour
             GetComponent<Collider2D>().enabled = false;
             CollectibleManager.addCollected(startPos);
             Animator.Play("ItemCollected");
-            _audioSource.PlayOneShot(ObtainSound);
+            if (ObtainSound)
+            {
+                _audioSource.PlayOneShot(ObtainSound);
+            }
+            
         }
     }
 
     void destroyCollectible()
     {
-        Destroy(gameObject);
+        gameObject.SetActive(false);
     }
 }

@@ -170,7 +170,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 16
+  m_RootOrder: 18
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!82 &51879656
 AudioSource:
@@ -320,7 +320,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7677002117335964395, guid: 07579cee8e22c6c4f8400bab9bcc6766, type: 3}
       propertyPath: m_RootOrder
-      value: 1
+      value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 7677002117335964395, guid: 07579cee8e22c6c4f8400bab9bcc6766, type: 3}
       propertyPath: m_LocalPosition.x
@@ -377,7 +377,15 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6596400940305314385, guid: 7fcb9b87b77e60f47b32cc8b544924e5, type: 3}
       propertyPath: sceneName
-      value: Greenlands 2
+      value: 2Greenlands
+      objectReference: {fileID: 0}
+    - target: {fileID: 6596400940305314385, guid: 7fcb9b87b77e60f47b32cc8b544924e5, type: 3}
+      propertyPath: spawnPoint.x
+      value: -2.93
+      objectReference: {fileID: 0}
+    - target: {fileID: 6596400940305314385, guid: 7fcb9b87b77e60f47b32cc8b544924e5, type: 3}
+      propertyPath: spawnPoint.y
+      value: 6.89
       objectReference: {fileID: 0}
     - target: {fileID: 6596400940305314391, guid: 7fcb9b87b77e60f47b32cc8b544924e5, type: 3}
       propertyPath: m_RootOrder
@@ -776,7 +784,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 519420028}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 8.33444, y: 5.86785, z: -10}
+  m_LocalPosition: {x: 8.290902, y: 4.60071, z: -10}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -1012,7 +1020,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6596400940305314391, guid: 7fcb9b87b77e60f47b32cc8b544924e5, type: 3}
       propertyPath: m_RootOrder
-      value: 3
+      value: 4
       objectReference: {fileID: 0}
     - target: {fileID: 6596400940305314391, guid: 7fcb9b87b77e60f47b32cc8b544924e5, type: 3}
       propertyPath: m_LocalPosition.x
@@ -1579,7 +1587,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1014444685}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 1.06, y: 6.4, z: -10}
+  m_LocalPosition: {x: -0.48, y: 0.41, z: -10}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -1710,7 +1718,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 9
+  m_RootOrder: 10
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &1042007021
 MonoBehaviour:
@@ -2056,7 +2064,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 12
+  m_RootOrder: 14
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1001 &1286550555
 PrefabInstance:
@@ -2235,7 +2243,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 9034448849730084984, guid: 3cee9b295a290a747b12789469384c98, type: 3}
       propertyPath: m_RootOrder
-      value: 2
+      value: 3
       objectReference: {fileID: 0}
     - target: {fileID: 9034448849730084984, guid: 3cee9b295a290a747b12789469384c98, type: 3}
       propertyPath: m_LocalPosition.x
@@ -2300,7 +2308,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4402016130216499686, guid: 2f7e70b48e54e1147bf01c47b94a51c0, type: 3}
       propertyPath: m_RootOrder
-      value: 18
+      value: 19
       objectReference: {fileID: 0}
     - target: {fileID: 4402016130216499686, guid: 2f7e70b48e54e1147bf01c47b94a51c0, type: 3}
       propertyPath: m_LocalPosition.x
@@ -16582,7 +16590,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 20
+  m_RootOrder: 21
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1824054946
 GameObject:
@@ -16992,8 +17000,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1a811fdb40fdef24bab18cc34de9f8c5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  canFly: 1
-  BoostForce: 750
+  canFly: 0
+  BoostForce: 2750
   DeathSound: {fileID: 8300000, guid: 5998fbc0e070a2d43b63a275d115002a, type: 3}
   JumpSound: {fileID: 8300000, guid: 690bf4a10e30d4c409a9fb1db234950d, type: 3}
 --- !u!70 &2046871625
@@ -17093,7 +17101,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2046871623}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 1.06, y: 6.4, z: 0}
+  m_LocalPosition: {x: -0.48, y: 0.41, z: 0}
   m_LocalScale: {x: 12, y: 12, z: 12}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -17376,7 +17384,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6596400940305314391, guid: 7fcb9b87b77e60f47b32cc8b544924e5, type: 3}
       propertyPath: m_RootOrder
-      value: 4
+      value: 5
       objectReference: {fileID: 0}
     - target: {fileID: 6596400940305314391, guid: 7fcb9b87b77e60f47b32cc8b544924e5, type: 3}
       propertyPath: m_LocalPosition.x

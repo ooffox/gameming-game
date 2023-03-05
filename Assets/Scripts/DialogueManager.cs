@@ -57,6 +57,10 @@ public class DialogueManager : MonoBehaviour
     private bool CanContinue()
     {
         return Input.GetKeyDown(KeyCode.Space) && currentTrigger != null && finishedLoading && !isTimed && !manual;
+        Debug.Log(Input.GetKeyDown(KeyCode.Space));
+        Debug.Log(currentTrigger != null);
+        Debug.Log(finishedLoading);
+        Debug.Log(!isTimed);
     }
 
     public void StartDialogue(Dialogue[] dialogue, bool m = false)

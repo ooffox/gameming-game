@@ -6,7 +6,6 @@ using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 public class DoorBehaviour : MonoBehaviour
 {
-    public bool ChangeScene;
     public Vector2 spawnPoint;
     public string sceneName;
     private GameObject player;
@@ -51,8 +50,7 @@ public class DoorBehaviour : MonoBehaviour
         PlayerController.s_InCutscene = true;
         PlayerController.s_SpawnPosition = spawnPoint;
         enterDoor = true;
-        if (ChangeScene) { StartCoroutine(PlayerController.s_PlayerScript.FadeIn(sceneName, Vector2.zero)); }
-        else { StartCoroutine(PlayerController.s_PlayerScript.FadeIn("", spawnPoint)); }
+        StartCoroutine(PlayerController.s_PlayerScript.FadeIn(sceneName, Vector2.zero));
     }
 
     public void loadScene()
