@@ -37,7 +37,6 @@ public class CollectibleBehaviour : MonoBehaviour
             {
                 _audioSource.PlayOneShot(ObtainSound);
             }
-            
         }
     }
 

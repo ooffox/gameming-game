@@ -17,16 +17,15 @@ public class PlayerController : MonoBehaviour
     public static bool s_InCutscene = false;
     public static GameObject s_PlayerObj;
     public static PlayerController s_PlayerScript;
-    public static Vector2 s_SpawnPosition = Vector2.zero;
     public AudioClip DeathSound;
     public AudioClip JumpSound;
     private float RunSpeed = 10.0f;
     private float JumpForce = 750.0f;
 
+    private bool _isDoubleJumping;
     private bool _boosting;
-    private float _lastFell;
-    private float _lastLeftPlatform;
-    private float _coyoteJumpThreshold = 0.075f;
+    private float _coyoteTime;
+    private float _coyoteJumpThreshold = 0.02f;
     private float _verticalClamp = -15.0f;
     private float _horizontal;
     private float _vertical;
@@ -34,6 +33,7 @@ public class PlayerController : MonoBehaviour
     private float _fadeSpeed = 0.02f;
     private float _lastJumped = 0.0f;
     private float _lastTryJump = 0.0f;
+    private float _mayCoyoteJump;
     private RaycastHit2D _rayHit;
     private Vector2 _boostDir;
     private Rigidbody2D _rigidbody2D;
@@ -68,9 +68,9 @@ public class PlayerController : MonoBehaviour
 
         CheckLastTriedJump();
 
-        CheckJump();
+        CheckDoubleJump();
 
-        CheckBoost();
+        CheckJump();
 
         InitializeAnimation();
     
@@ -104,18 +104,6 @@ public class PlayerController : MonoBehaviour
         }
     }
 
-    void OnCollisionExit2D(Collision2D collision)
-    {
-        if (collision.gameObject.tag == "Tilemap")
-        {
-            if (Time.time - _lastJumped <= 0.05f || transform.position.y - collision.collider.transform.position.y < 0.0f)
-            {
-                return;
-            }
-            _lastFell = Time.time;
-        }
-    }
-
     #endregion
 
 
@@ -139,6 +127,7 @@ public class PlayerController : MonoBehaviour
         _audioSource = _manager.GetComponent<AudioSource>();
         _rigidbody2D.gravityScale = PlayerStats.gravity;
         _ownMask = LayerMask.GetMask("Player");
+        _mayCoyoteJump = _coyoteJumpThreshold;
     }
 
     private void UpdateMovementVariables()
@@ -146,6 +135,11 @@ public class PlayerController : MonoBehaviour
         Grounded = IsGrounded();
         _horizontal = Input.GetAxisRaw("Horizontal");
         _vertical = Input.GetAxisRaw("Vertical");
+        _coyoteTime -= 0.1f * Time.deltaTime;
+        if (Grounded)
+        {
+            _coyoteTime = _coyoteJumpThreshold;
+        }
     }
 
     #endregion
@@ -165,8 +159,18 @@ public class PlayerController : MonoBehaviour
         }
     }
 
+    private void CheckDoubleJump()
+    {
+        if (Grounded) { _isDoubleJumping = false; }
+        if (CanJump() || _isDoubleJumping || !Input.GetKeyDown(KeyCode.W)) { return; }
+        _isDoubleJumping = true;
+        Jump();
+    }
+
     private void CheckJump()
     {
+        
+
         if (CanJump() || (canFly && Input.GetKeyDown(KeyCode.W)))
         {
             Jump();
@@ -179,6 +183,7 @@ public class PlayerController : MonoBehaviour
         {
             _lastTryJump = Time.time;
         }
+
     }
 
     private bool CheckDead()
@@ -205,10 +210,10 @@ public class PlayerController : MonoBehaviour
 
     private bool IsGrounded()
     {
-        _rayHit = Physics2D.Raycast(transform.position, Vector2.down, 2.05f, ~_ownMask);
+        _rayHit = Physics2D.Raycast(transform.position, Vector2.down, 2.035f, ~_ownMask);
         if (_rayHit)
         {
-            if (_rayHit.collider.isTrigger) { return false; }
+            if (_rayHit.collider.isTrigger || _rayHit.collider.gameObject.tag == "Deathzone") { return false; }
             else { return true; }
         }
         return false;
@@ -221,16 +226,16 @@ public class PlayerController : MonoBehaviour
 
     private bool CanJump()
     {
-        return (Grounded || Time.time - _lastFell < _coyoteJumpThreshold) && Time.time - _lastTryJump < 0.15f && Time.time - _lastJumped > 0.05f;
+        return (Grounded || (_coyoteTime >= 0.0f && Time.time - _lastJumped > 0.5f)) && Time.time - _lastTryJump < 0.15f && Time.time - _lastJumped > 0.05f;
     }
     
     void CheckSpawnPos()
     {
-        if (s_SpawnPosition != Vector2.zero)
+        if (PlayerStats.s_SpawnPosition != Vector2.zero)
         {
-            transform.position = s_SpawnPosition;
-            s_InCutscene = false;
+            transform.position = PlayerStats.s_SpawnPosition;
         }
+        s_InCutscene = false;
     }
 
     #endregion
@@ -252,7 +257,6 @@ public class PlayerController : MonoBehaviour
         _rigidbody2D.velocity = Vector2.zero;
         _rigidbody2D.AddForce(Vector2.up * JumpForce * _rigidbody2D.mass);
         _lastJumped = Time.time;
-        _lastFell = 0.0f;
     }
 
     public void Die()
@@ -322,13 +326,13 @@ public class PlayerController : MonoBehaviour
         }
         StartFade();
         if (sPoint != Vector2.zero) {
-            s_SpawnPosition = sPoint;
+            PlayerStats.s_SpawnPosition = sPoint;
         }
         if (sName != "") 
         {
-            s_SpawnPosition = sPoint;
             SceneManager.LoadScene(sName);
         }
+        
         
     }
 

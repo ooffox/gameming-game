@@ -25,6 +25,9 @@ public class EagleBehaviour : MonoBehaviour
         {
             this.enabled = false;
         }
+    }
+    void FixedUpdate()
+    {
         _correctDir = transform.position.x > player.transform.position.x ? 1.0f : -1.0f;
         isHoming = Vector3.Distance(transform.position, player.transform.position) < minimumDistance;
         direction = new Vector2(player.transform.position.x - transform.position.x, player.transform.position.y - transform.position.y);
@@ -32,7 +35,7 @@ public class EagleBehaviour : MonoBehaviour
         if (isHoming)
         {
             transform.localScale = new Vector3(-Mathf.Abs(transform.localScale.x), transform.localScale.y, transform.localScale.z);
-            transform.position = Vector3.MoveTowards(transform.position, player.transform.position, 0.025f);
+            transform.position = Vector3.MoveTowards(transform.position, player.transform.position, 0.075f);
             transform.eulerAngles = new Vector3(0, 0, rotation + 37.5f);
         }
         else

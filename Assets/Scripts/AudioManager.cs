@@ -37,7 +37,7 @@ public class AudioManager : MonoBehaviour
     {
         AudioSource = GetComponent<AudioSource>();
         
-        if ((AudioSource.clip == stageMusic && AudioSource.isPlaying) || stageMusic == null)
+        if (((AudioSource.clip == stageMusic || AudioSource.clip == stageMusicPrelude) && AudioSource.isPlaying) || stageMusic == null)
         {
             return;
         }

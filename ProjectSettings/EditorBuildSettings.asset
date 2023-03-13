@@ -20,4 +20,7 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/2Greenlands.unity
     guid: 727a98c48db229b4aa18e1a81fb8c1d2
+  - enabled: 1
+    path: Assets/Scenes/3Greenlands.unity
+    guid: 6d1a5304387db95488dd40fe35ff2154
   m_configObjects: {}

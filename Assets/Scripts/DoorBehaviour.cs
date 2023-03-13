@@ -6,7 +6,7 @@ using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 public class DoorBehaviour : MonoBehaviour
 {
-    public Vector2 spawnPoint;
+    public Vector3 spawnPoint;
     public string sceneName;
     private GameObject player;
     private Image fadeImage;
@@ -48,7 +48,7 @@ public class DoorBehaviour : MonoBehaviour
     {
         player.GetComponent<Rigidbody2D>().velocity = Vector2.zero;
         PlayerController.s_InCutscene = true;
-        PlayerController.s_SpawnPosition = spawnPoint;
+        PlayerStats.s_SpawnPosition = spawnPoint;
         enterDoor = true;
         StartCoroutine(PlayerController.s_PlayerScript.FadeIn(sceneName, Vector2.zero));
     }

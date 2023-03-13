@@ -17001,7 +17001,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   canFly: 0
-  BoostForce: 2750
+  BoostForce: 750
   DeathSound: {fileID: 8300000, guid: 5998fbc0e070a2d43b63a275d115002a, type: 3}
   JumpSound: {fileID: 8300000, guid: 690bf4a10e30d4c409a9fb1db234950d, type: 3}
 --- !u!70 &2046871625
